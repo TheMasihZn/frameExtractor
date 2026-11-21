@@ -10,7 +10,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Gravity
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.ScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import kotlin.math.abs
@@ -19,20 +23,43 @@ class MainActivity : Activity() {
     private lateinit var status: TextView
     @Volatile private var busy = false
 
+    private lateinit var bar: ProgressBar
+
+    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 96, 48, 48)
+        // Compact layout: fits the smallest multi-window / pop-up size.
+        val pick = Button(this).apply {
+            text = "Pick"
+            textSize = 13f
+            minHeight = 0; minimumHeight = dp(36)
+            minWidth = 0; minimumWidth = dp(56)
+            setPadding(dp(8), 0, dp(8), 0)
         }
-        val pick = Button(this).apply { text = "Pick video" }
+        bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
+            max = 100
+            visibility = View.GONE
+        }
+        val top = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(pick)
+            addView(bar, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                .apply { marginStart = dp(8) })
+        }
         status = TextView(this).apply {
-            textSize = 18f
-            text = "Pick a screen recording. Frames where the screen changes are saved to Pictures/frameExtractor."
+            textSize = 12f
+            text = "Pick or share a video. Changed frames go to Pictures/frameExtractor."
+            setPadding(0, dp(4), 0, 0)
         }
-        layout.addView(pick)
-        layout.addView(status)
-        setContentView(layout)
+        val col = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(8), dp(6), dp(8), dp(6))
+            addView(top)
+            addView(status)
+        }
+        setContentView(ScrollView(this).apply { addView(col) })
         pick.setOnClickListener {
             if (busy) return@setOnClickListener
             val i = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -95,11 +122,14 @@ class MainActivity : Activity() {
                 }
                 f.recycle()
             }
-            say("Scanned ${t / 1000}s of ${durMs / 1000}s, kept $saved frames")
+            val pct = if (durMs > 0) (t * 100 / durMs).toInt() else 0
+            runOnUiThread { bar.visibility = View.VISIBLE; bar.progress = pct }
+            say("${t / 1000}/${durMs / 1000}s · kept $saved")
             t += 1000
         }
         r.release()
-        say("Done. $saved frames saved in Pictures/frameExtractor")
+        runOnUiThread { bar.progress = 100 }
+        say("Done: $saved frames in Pictures/frameExtractor")
     }
 
     private fun signature(b: Bitmap): IntArray {

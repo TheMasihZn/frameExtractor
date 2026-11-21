@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- film strip -->
+    <path android:strokeColor="#4FD1C5" android:strokeWidth="2.5"
+        android:strokeLineJoin="round" android:strokeLineCap="round"
+        android:pathData="M31,40 H59 A3,3 0 0 1 62,43 V77 A3,3 0 0 1 59,80 H31 A3,3 0 0 1 28,77 V43 A3,3 0 0 1 31,40 Z M34,40 V80 M56,40 V80 M34,53 H56 M34,67 H56"/>
+    <!-- sprocket holes -->
+    <path android:fillColor="#4FD1C5"
+        android:pathData="M29.5,44h2.5v3h-2.5z M29.5,58h2.5v3h-2.5z M29.5,72h2.5v3h-2.5z M58,44h2.5v3h-2.5z M58,58h2.5v3h-2.5z M58,72h2.5v3h-2.5z"/>
+    <!-- extracted frame -->
+    <path android:fillColor="#000000" android:strokeColor="#F6C453" android:strokeWidth="2.5"
+        android:strokeLineJoin="round"
+        android:pathData="M55,26 H77 A3,3 0 0 1 80,29 V45 A3,3 0 0 1 77,48 H55 A3,3 0 0 1 52,45 V29 A3,3 0 0 1 55,26 Z"/>
+    <path android:strokeColor="#F6C453" android:strokeWidth="2.5"
+        android:strokeLineJoin="round" android:strokeLineCap="round"
+        android:pathData="M57,43 L63,36 L67,40 L71,34 L76,43 M45,56 L52,49 M47,49 H52 V54"/>
+</vector>
